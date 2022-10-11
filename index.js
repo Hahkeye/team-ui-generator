@@ -1,37 +1,29 @@
-import {Employee} from './lib/Employee.js';
-import {Engineer} from './lib/Engineer.js';
-import {Manager} from './lib/Manager.js';
-import {Intern} from './lib/Intern.js';
-import inquirer from "inquirer";
+// import inquirer from "inquirer";
+const inquirer = require('inquirer');
+const Employee = require('./lib/Employee');
+const Engineer = require('./lib/Engineer');
+const Manager = require('./lib/Manager');
+const Intern = require('./lib/Intern');
 
 var cont = true;
-let emp = new Employee("test",1,"email");
-let engi = new Engineer("test2",2,"email2","user");
 
-console.log(emp.getRole);
-console.log(engi.getRole);
+
 let employees = [Employee];
-employees.push(emp);
-employees.push(engi);
-console.log(employees);
 
-function continuePrompt(){
-    inquirer.prompt([
+
+async function continuePrompt(){
+    return inquirer.prompt([
         {
             type: 'input',
             name: 'cont',
             message: "Do you want to add another Employee?"
         }
-    ]).then((answers) =>{
-        cont = answers.message;
-    }).catch((error)=>{
-        console.log("error ",error);
-    });
+    ]);
 }
-function specifityPrompt(type){
+async function specifityPrompt(type){
     let question="";
-    console.log(type.type[0]);
-    switch(type.type[0]){
+    console.log(type.type);
+    switch(type.type){
         case "Manager":
             question = "What is the office number of the manager?"
             break;
@@ -45,19 +37,60 @@ function specifityPrompt(type){
             question = "";
             break;
     }
-    inquirer.prompt([
+    return inquirer.prompt([
         {
             type: 'input',
             name: 'stuff',
             message: `${question}`
         }
-    ]).then((answers) =>{
-        console.log(type);
-        let sw = type.type[0];
-        delete type['type'];
-        let temp = Object.values(Object.assign({},type,answers));
-        console.log(temp);
-        // console.log(Object.values(temp));
+    ]);
+}
+
+async function employeePrompt(){
+    return inquirer.prompt([
+            {
+                type: 'input',
+                name: 'name',
+                message: 'What is this Employees name? '
+            },
+            {
+                type: 'input',
+                name: 'id',
+                message: 'What is this employee id? '
+            },
+            {
+                type: 'input',
+                name: 'email',
+                message: 'What is the employees email? '
+            },
+            {
+                type: 'list',
+                name: 'type',
+                message: 'What kind of employee is this? ',
+                choices: [
+                    "Employee",
+                    "Manager",
+                    "Engineer",
+                    "Intern",
+                ]
+        
+            }
+    
+        ]);
+}
+
+
+async function init(){
+    while(true){
+        let t = await employeePrompt();
+        console.log(t);
+        let t2=null;
+        if(t.type!="Employee"){
+            t2 = await specifityPrompt(t);
+        }
+        let sw = t.type;
+        delete t['type'];
+        let temp = Object.values(Object.assign({},t,t2));
         switch(sw){
             case "Manager":
                 employees.push(new Manager(...temp))
@@ -72,54 +105,11 @@ function specifityPrompt(type){
                 employees.push(new Employee(...temp))
                 break;
         }
-        console.log(employees);
-        continuePrompt();
-    }).catch((error)=>{
-        console.log("error ",error);
-    });
-}
-
-async function employeePrompt(){
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'name',
-            message: 'What is this Employees name? '
-        },
-        {
-            type: 'input',
-            name: 'id',
-            message: 'What is this employee id? '
-        },
-        {
-            type: 'input',
-            name: 'email',
-            message: 'What is the employees email? '
-        },
-        {
-            type: 'checkbox',
-            name: 'type',
-            message: 'What kind of employee is this? ',
-            choices: [
-                "Employee",
-                "Manager",
-                "Engineer",
-                "Intern",
-            ]
-    
+        let temp2 = await continuePrompt();
+        if(temp2.cont=="false"){
+            console.log(employees);
+            break;
         }
-
-    ]).then((answers) =>{
-        specifityPrompt(answers);
-    }).catch((error)=>{
-        console.log("error ",error);
-    });
-}
-
-
-async function init(){
-    while(true){
-        const t = await employeePrompt();
     }
 }
 
