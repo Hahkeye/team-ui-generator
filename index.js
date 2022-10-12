@@ -1,19 +1,17 @@
-// import inquirer from "inquirer";
+//imports
 const inquirer = require('inquirer');
 const Employee = require('./lib/Employee');
 const Engineer = require('./lib/Engineer');
 const Manager = require('./lib/Manager');
 const Intern = require('./lib/Intern');
 const Helper = require('./src/helper')
-// const footer = require('./src/helper');
 const fs = require('fs');
 
-var cont = true;
 
-
+//list of employees
 let employees = [];
 
-
+//Promts the user if they would like to add another employee returns the value
 async function continuePrompt(){
     return inquirer.prompt([
         {
@@ -23,6 +21,7 @@ async function continuePrompt(){
         }
     ]);
 }
+//Prompts the user for the specifc kind of employee and returns the value
 async function specifityPrompt(type){
     let question="";
     console.log(type.type);
@@ -48,7 +47,7 @@ async function specifityPrompt(type){
         }
     ]);
 }
-
+//Prompts the user for the basic employee information
 async function employeePrompt(){
     return inquirer.prompt([
             {
@@ -82,19 +81,19 @@ async function employeePrompt(){
         ]);
 }
 
-
+//mian function
 async function init(){
-    while(true){
+    while(true){//loops until they are done entering employees
         let t = await employeePrompt();
-        console.log(t);
+        // console.log(t);
         let t2=null;
         if(t.type!="Employee"){
             t2 = await specifityPrompt(t);
         }
         let sw = t.type;
-        delete t['type'];
+        delete t['type'];//cleans up the data because we really dont need it anymore.
         let temp = Object.values(Object.assign({},t,t2));
-        switch(sw){
+        switch(sw){//fancy switch to populate the new object
             case "Manager":
                 employees.push(new Manager(...temp))
                 break;
@@ -109,36 +108,22 @@ async function init(){
                 break;
         }
         let temp2 = await continuePrompt();
-        if(temp2.cont=="false"){
+        if(temp2.cont=="false"){//if they are done quit
             console.log(employees);
             break;
         }
     }
     let temp='';
     for(let i in employees){
-        let tem=`
-        <div class="card m-3 bg-primary" style="width: 18rem;">
-            <div class="card-header">
-                <p>Name: ${employees[i].getName}</p>
-                <p>${employees[i].getRole}</p>
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">ID: ${employees[i].getId}</li>
-                <li class="list-group-item">Email: ${employees[i].getEmail}</li>
-                <li class="list-group-item">A third item</li>
-            </ul>
-        </div>`;
-        temp+=tem;
+        temp+=employees[i].html;//gets the html for the users and adds it to the body
     }
-    // console.log(header);
-    // console.log(footer);
     let val = 
     `
     ${Helper.header}
     ${temp}
     ${Helper.footer}
-    `;
-    fs.writeFile("./dist/index.html",val,() =>{
+    `;//Puts the predefined header and foot around the generated HTML
+    fs.writeFile("./dist/index.html",val,() =>{//write to a file and then say pog
         console.log("pog");
     })
 
