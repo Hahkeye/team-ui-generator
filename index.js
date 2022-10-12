@@ -4,11 +4,14 @@ const Employee = require('./lib/Employee');
 const Engineer = require('./lib/Engineer');
 const Manager = require('./lib/Manager');
 const Intern = require('./lib/Intern');
+const Helper = require('./src/helper')
+// const footer = require('./src/helper');
+const fs = require('fs');
 
 var cont = true;
 
 
-let employees = [Employee];
+let employees = [];
 
 
 async function continuePrompt(){
@@ -111,6 +114,34 @@ async function init(){
             break;
         }
     }
+    let temp='';
+    for(let i in employees){
+        let tem=`
+        <div class="card m-3 bg-primary" style="width: 18rem;">
+            <div class="card-header">
+                <p>Name: ${employees[i].getName}</p>
+                <p>${employees[i].getRole}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">ID: ${employees[i].getId}</li>
+                <li class="list-group-item">Email: ${employees[i].getEmail}</li>
+                <li class="list-group-item">A third item</li>
+            </ul>
+        </div>`;
+        temp+=tem;
+    }
+    // console.log(header);
+    // console.log(footer);
+    let val = 
+    `
+    ${Helper.header}
+    ${temp}
+    ${Helper.footer}
+    `;
+    fs.writeFile("./dist/index.html",val,() =>{
+        console.log("pog");
+    })
+
 }
 
 init();
