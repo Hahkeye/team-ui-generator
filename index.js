@@ -6,11 +6,23 @@ const Manager = require('./lib/Manager');
 const Intern = require('./lib/Intern');
 const Helper = require('./src/helper')
 const fs = require('fs');
+const { log } = require('console');
 
 //list of employees
 let employees = [];
 
 //Promts the user if they would like to add another employee returns the value
+async function validEmail(email){
+    if(email.toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )){
+        return true;
+    }
+    return false;
+}
+
+
 async function continuePrompt(){
     return inquirer.prompt([
         {
@@ -23,7 +35,7 @@ async function continuePrompt(){
 //Prompts the user for the specifc kind of employee and returns the value
 async function specifityPrompt(type){
     let question="";
-    console.log(type.type);
+    // console.log(type.type);
     switch(type.type){
         case "Manager":
             question = "What is the office number of the manager?"
@@ -84,7 +96,11 @@ async function employeePrompt(){
 async function init(){
     while(true){//loops until they are done entering employees
         let t = await employeePrompt();
-        // console.log(t);
+        let check = await validEmail(t.email)
+        if(!check){
+            console.log("You have entered a invalid email. Please try again.");
+            t = await employeePrompt();
+        }
         let t2=null;
         if(t.type!="Employee"){
             t2 = await specifityPrompt(t);
@@ -123,7 +139,7 @@ async function init(){
     ${Helper.footer}
     `;//Puts the predefined header and foot around the generated HTML
     fs.writeFile("./dist/index.html",val,() =>{//write to a file and then say pog
-        console.log("pog");
+        // console.log("pog");
     });
 }
 
