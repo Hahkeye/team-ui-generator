@@ -7,7 +7,6 @@ const Intern = require('./lib/Intern');
 const Helper = require('./src/helper')
 const fs = require('fs');
 
-
 //list of employees
 let employees = [];
 
@@ -109,7 +108,7 @@ async function init(){
         }
         let temp2 = await continuePrompt();
         if(temp2.cont=="false"){//if they are done quit
-            console.log(employees);
+            // console.log(employees);
             break;
         }
     }
@@ -125,8 +124,7 @@ async function init(){
     `;//Puts the predefined header and foot around the generated HTML
     fs.writeFile("./dist/index.html",val,() =>{//write to a file and then say pog
         console.log("pog");
-    })
-
+    });
 }
 
 init();
